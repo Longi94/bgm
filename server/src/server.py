@@ -11,7 +11,7 @@ CORS(app)
 session = requests_cache.CachedSession('bgg_cache', expire_after=604800)
 
 retries = Retry(total=5,
-                backoff_factor=0.1,
+                backoff_factor=1,
                 status_forcelist=[ 500, 502, 503, 504 ])
 
 session.mount('http://', HTTPAdapter(max_retries=retries))
@@ -122,4 +122,4 @@ def boardgame_details():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=9010)
