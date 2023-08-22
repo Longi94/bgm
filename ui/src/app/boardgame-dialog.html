@@ -1,0 +1,43 @@
+<h1 mat-dialog-title>{{data.game.name}} ({{data.game.yearpublished}})</h1>
+<div mat-dialog-content class="mat-typography" class="boardgame-content">
+  <img [src]="data.game.image" class="boardgame-image" />
+  <div class="boardgame-quick-data">
+    <div class="icon-data">
+      <mat-icon fontIcon="group"></mat-icon>
+      <span>{{data.game.minplayers}}<span
+          *ngIf="data.game.minplayers !== data.game.maxplayers">-{{data.game.maxplayers}}</span></span>
+    </div>
+    <div class="icon-data" style="color: #0288D1">
+      <mat-icon fontIcon="group"></mat-icon>
+      <span>{{recommended(data.game)}}</span>
+    </div>
+    <div class="icon-data" style="color: #4CAF50">
+      <mat-icon fontIcon="group"></mat-icon>
+      <span>{{best(data.game)}}</span>
+    </div>
+    <div class="icon-data">
+      <mat-icon fontIcon="timer"></mat-icon>
+      <span>{{data.game.minplaytime}}<span
+          *ngIf="data.game.minplaytime !== data.game.maxplaytime">-{{data.game.maxplaytime}}</span></span>
+    </div>
+    <div class="icon-data">
+      <mat-icon fontIcon="star"></mat-icon>
+      <span [style]="{color: ratingColor(data.game)}">{{roundRating(data.game.ratings?.average)}}</span>
+    </div>
+    <div class="icon-data">
+      <mat-icon fontIcon="psychology"></mat-icon>
+      <span [style]="{color: weightColor(data.game)}">{{roundRating(data.game.ratings?.averageweight)}}</span>
+    </div>
+  </div>
+  <a mat-raised-button mat-button color="primary" target="_blank"
+    [href]="'https://boardgamegeek.com/boardgame/' + data.game.id">BoardGameGeek</a>
+  <p>{{htmlDecode(data.game.description ?? '')}}</p>
+  <h3>Categories</h3>
+  <ul>
+    <li *ngFor="let category of data.game.categories">{{category}}</li>
+  </ul>
+  <h3>Mechanics</h3>
+  <ul>
+    <li *ngFor="let mechanic of data.game.mechanics">{{mechanic}}</li>
+  </ul>
+</div>

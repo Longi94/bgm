@@ -1,0 +1,93 @@
+<div *ngIf="error" class="container center mat-app-background">
+  <p class="error-message">{{error}}</p>
+</div>
+<div *ngIf="loading && !error" class="container center mat-app-background">
+  <h1>Loading...</h1>
+  <mat-progress-bar [mode]="loaded ===  0 ? 'indeterminate' : 'determinate'" [value]="100 / total * loaded">
+
+  </mat-progress-bar>
+</div>
+<div *ngIf="!loading && !error" class="container mat-app-background">
+  <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <form>
+            <mat-form-field appearance="fill" class="search-field">
+              <mat-label>Boardgames</mat-label>
+              <input type="text" matInput (click)="$event.stopPropagation()" [(ngModel)]="searchText" name="searchText">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+          </form>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="player-count-filter-div">
+        <mat-form-field>
+          <mat-label>Player count</mat-label>
+          <input type="number" matInput [(ngModel)]="playerCountFilter" name="playerCountFilter">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Filter mode</mat-label>
+          <mat-select [(ngModel)]="playerCountFilterMode" name="playerCountFilterMode">
+            <mat-option value="playable">Playable</mat-option>
+            <mat-option value="recommended">Recommended</mat-option>
+            <mat-option value="best">Best</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <mat-form-field>
+        <mat-label>Sort</mat-label>
+        <mat-select [(ngModel)]="sort" name="sort">
+          <mat-option value="alphabetical">Alphabetical</mat-option>
+          <mat-option value="rating">Rating</mat-option>
+          <mat-option value="weight">Weight</mat-option>
+          <mat-option value="publicationyear">Year of publication</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-icon-button (click)="toggleSortOrder()">
+        <mat-icon>{{sortDirection === 'asc' ? 'keyboard_double_arrow_down' : 'keyboard_double_arrow_up'}}</mat-icon>
+      </button>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <div class="boardgame-list">
+    <mat-card (click)="openDialog(game)" *ngFor="let game of getGames() | filter : searchText : playerCountFilter : playerCountFilterMode : sort : sortDirection">
+      <mat-card-header>
+        <mat-card-title-group>
+          <mat-card-title>{{game.name}}</mat-card-title>
+          <mat-card-subtitle>{{game.yearpublished}}</mat-card-subtitle>
+          <img class="game-thumbnail" mat-card-sm-image [src]="game.thumbnail">
+        </mat-card-title-group>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="boardgame-quick-data">
+          <div class="icon-data">
+            <mat-icon fontIcon="group"></mat-icon>
+            <span>{{game.minplayers}}<span
+                *ngIf="game.minplayers !== game.maxplayers">-{{game.maxplayers}}</span></span>
+          </div>
+          <div class="icon-data" style="color: #0288D1">
+            <mat-icon fontIcon="group"></mat-icon>
+            <span>{{recommended(game)}}</span>
+          </div>
+          <div class="icon-data" style="color: #4CAF50">
+            <mat-icon fontIcon="group"></mat-icon>
+            <span>{{best(game)}}</span>
+          </div>
+          <div class="icon-data">
+            <mat-icon fontIcon="timer"></mat-icon>
+            <span>{{game.minplaytime}}<span
+                *ngIf="game.minplaytime !== game.maxplaytime">-{{game.maxplaytime}}</span></span>
+          </div>
+          <div class="icon-data">
+            <mat-icon fontIcon="star"></mat-icon>
+            <span [style]="{color: ratingColor(game)}">{{roundRating(game.ratings?.average)}}</span>
+          </div>
+          <div class="icon-data">
+            <mat-icon fontIcon="psychology"></mat-icon>
+            <span [style]="{color: weightColor(game)}">{{roundRating(game.ratings?.averageweight)}}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
