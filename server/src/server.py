@@ -6,6 +6,8 @@ import requests_cache
 from requests.adapters import HTTPAdapter, Retry
 from retry import retry
 import logging
+import json
+import os
 
 logging.basicConfig()
 
@@ -103,6 +105,19 @@ def get_boardgame_details(game_id):
     }
 
 
+def persist_game(id, details):
+    with open(f"games/{id}.json", "w") as f:
+        json.dump(details, f)
+
+
+def get_persisted_game(id):
+    try:
+        with open(f"games/{id}.json", "r") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
 @app.route("/owned", methods=["GET"])
 def owned_boardgames():
     try:
@@ -120,11 +135,16 @@ def boardgame_details():
 
     try:
         details = get_boardgame_details(game_id)
+        persist_game(game_id, details)
         return jsonify(details)
     except Exception as e:
         print(traceback.format_exc())
+        details = get_persisted_game(game_id)
+        if details is not None:
+            return jsonify(details)
         return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
+    os.makedirs("games", exist_ok=True)
     app.run(debug=True, port=9010)
