@@ -55,10 +55,6 @@ export function recommended(game: BoardGame): string {
   game.suggested_numplayers?.forEach(p => {
     if (p.best + p.recommended > p.not_recomended) {
 
-      if (p.numplayers?.indexOf('+') > -1) {
-        return;
-      }
-
       if (groups.length === 0) {
         groups.push([p.numplayers]);
         return;
@@ -88,10 +84,6 @@ export function best(game: BoardGame): string {
   game.suggested_numplayers?.forEach(p => {
     if (p.best >= p.recommended && p.best >= p.not_recomended) {
 
-      if (p.numplayers?.indexOf('+') > -1) {
-        return;
-      }
-
       if (groups.length === 0) {
         groups.push([p.numplayers]);
         return;
@@ -105,6 +97,19 @@ export function best(game: BoardGame): string {
     }
 
   });
+
+  if (groups.length === 0) {
+    const highestBest = game.suggested_numplayers?.reduce((prev, current) => {
+      const prevRate = prev.best / (prev.best + prev.not_recomended + prev.recommended);
+      const currentRate = current.best / (current.best + current.not_recomended + current.recommended);
+
+      return prevRate >= currentRate ? prev : current;
+    })
+
+    if (highestBest !== undefined) {
+      groups.push([highestBest.numplayers]);
+    }
+  }
 
   return groups.map(g => {
     if (g.length === 1) {
